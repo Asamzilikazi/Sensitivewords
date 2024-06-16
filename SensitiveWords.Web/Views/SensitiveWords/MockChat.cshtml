@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Mock Chat";
+}
+
+<h1>Mock Chat</h1>
+
+<div>
+    <form id="chatForm">
+        <input type="text" id="messageInput" placeholder="Enter your message" />
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<div id="chatContainer"></div>
+
+@section Scripts {
+<script>
+    $(function () {
+        // Function to replace sensitive words with placeholders
+        function replaceSensitiveWords(message, sensitiveWords) {
+            for (let word of sensitiveWords) {
+                const regex = new RegExp(word, 'gi');
+                message = message.replace(regex, '*****');
+            }
+            return message;
+        }
+        
+        // Get the sensitive words from the API
+        $.get('/api/SensitiveWordsApi', function (data) {
+            const sensitiveWords = data;
+           
+
+            // Handle form submission
+            $('#chatForm').submit(function (e) {
+                e.preventDefault();
+                const message = $('#messageInput').val();
+                const bloopedMessage = replaceSensitiveWords(message, sensitiveWords);
+                $('#chatContainer').append('<p>' + bloopedMessage + '</p>');
+                $('#messageInput').val('');
+            });
+        });
+    });
+</script>
+}
